@@ -3,6 +3,7 @@ package io.github.yuanbug.ast.article.example.base.script;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 import lombok.SneakyThrows;
 
 import java.io.File;
@@ -22,6 +23,8 @@ public abstract class BaseSimpleScript {
         if (null == ast) {
             return;
         }
+        // 尽量避免破坏原始代码格式
+        LexicalPreservingPrinter.setup(ast);
         doHandle(ast);
         if (!writeBack) {
             System.out.printf("%n------- %s : %n", file.getName());
