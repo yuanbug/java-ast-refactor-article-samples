@@ -15,6 +15,7 @@ public class IfStatementBlockCheckScript extends BaseSimpleScript {
 
     @Override
     protected void doHandle(CompilationUnit ast) {
+        // Node#findAll(Class<?> nodeType)方法可以获取当前结点下所有指定结点，包括嵌套的
         ast.findAll(IfStmt.class).forEach(ifStmt -> {
             // 处理then部分
             ifStmt.setThenStmt(wrapWithBlock(ifStmt.getThenStmt()));
