@@ -37,6 +37,7 @@ public class IfStatementBlockCheckScript extends BaseSimpleScript {
         if (statement instanceof BlockStmt) {
             return statement;
         }
+        // 要构造一个结点，通常直接使用对应类型的构造方法即可，可以点进对应类型的源码查看构造方法重载，从中选择一个适合的
         return new BlockStmt(NodeList.nodeList(statement));
     }
 
