@@ -32,7 +32,7 @@ public class IfStatementBlockCheckScript extends BaseSimpleScript {
     /**
      * 如果语句已经是块语句，直接返回，否则使用块语句包裹
      */
-    protected Statement wrapWithBlock(Statement statement) {
+    private Statement wrapWithBlock(Statement statement) {
         if (statement instanceof BlockStmt) {
             return statement;
         }
