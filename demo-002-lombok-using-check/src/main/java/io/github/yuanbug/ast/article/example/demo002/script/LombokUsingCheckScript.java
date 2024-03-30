@@ -60,7 +60,7 @@ public class LombokUsingCheckScript extends BaseSimpleScript {
         }
         // 带属性的@Annotation(key=value)形式
         if (annotationExpr instanceof NormalAnnotationExpr expr) {
-            // 已经指定了callSuper，跳过
+            // 已经指定了callSuper，跳过（显式指定为false的也跳过）
             if (expr.getPairs().stream().anyMatch(pair -> CALL_SUPER.equals(pair.getNameAsString()))) {
                 return;
             }
@@ -118,9 +118,7 @@ public class LombokUsingCheckScript extends BaseSimpleScript {
     private void fixBuilderWithoutConstructor(ClassOrInterfaceDeclaration declaration) {
         ensureNoArgsConstructorExists(declaration);
         long nonFinalFieldCount = declaration.getFields().stream().filter(fieldDeclaration -> !fieldDeclaration.isFinal()).count();
-        if (nonFinalFieldCount > 0) {
-            ensureAllArgsConstructorExists(declaration, nonFinalFieldCount);
-        }
+        ensureAllArgsConstructorExists(declaration, nonFinalFieldCount);
     }
 
     private void ensureNoArgsConstructorExists(ClassOrInterfaceDeclaration declaration) {
@@ -130,16 +128,21 @@ public class LombokUsingCheckScript extends BaseSimpleScript {
         if (declaration.getDefaultConstructor().isPresent()) {
             return;
         }
+        declaration.tryAddImportToParentCompilationUnit(NoArgsConstructor.class);
         declaration.addAnnotation(new MarkerAnnotationExpr("NoArgsConstructor"));
     }
 
     private void ensureAllArgsConstructorExists(ClassOrInterfaceDeclaration declaration, long nonFinalFieldCount) {
+        if (nonFinalFieldCount <= 0) {
+            return;
+        }
         if (declaration.isAnnotationPresent(AllArgsConstructor.class)) {
             return;
         }
         if (declaration.getConstructors().stream().anyMatch(constructorDeclaration -> constructorDeclaration.getParameters().size() == nonFinalFieldCount)) {
             return;
         }
+        declaration.tryAddImportToParentCompilationUnit(AllArgsConstructor.class);
         declaration.addAnnotation(new MarkerAnnotationExpr("AllArgsConstructor"));
     }
 
