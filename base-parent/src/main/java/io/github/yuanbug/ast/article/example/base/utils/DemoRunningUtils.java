@@ -44,16 +44,19 @@ public final class DemoRunningUtils {
         }
         String moduleNamePrefix = "demo-%s".formatted(matcher.group(1));
         Path workingPath = Path.of(System.getProperty("user.dir"));
-        File moduleDir = Optional.ofNullable(workingPath.toFile().listFiles())
+        Path useCasesRelativePath = Path.of("src/main/java", packageName.replace(".", "/"), "cases");
+        File useCasesDir = Optional.ofNullable(workingPath.toFile().listFiles())
                 .map(Stream::of)
                 .stream()
                 .flatMap(Function.identity())
+                .filter(File::isDirectory)
                 .filter(file -> file.getName().startsWith(moduleNamePrefix))
+                .map(File::toPath)
+                .map(moduleDir -> moduleDir.resolve(useCasesRelativePath))
+                .map(Path::toFile)
+                .filter(File::exists)
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("定位不到Main类所在模块 %s".formatted(mainClassName)));
-
-        Path relativePath = Path.of("src/main/java", packageName.replace(".", "/"), "cases");
-        File useCasesDir = moduleDir.toPath().resolve(relativePath).toFile();
+                .orElseThrow(() -> new IllegalArgumentException("定位不到Main类所在模块的用例目录 %s".formatted(mainClassName)));
 
         return getAllFiles(useCasesDir);
     }
