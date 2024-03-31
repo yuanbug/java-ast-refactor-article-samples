@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.yuanbug.ast.article.example</groupId>
-    <artifactId>demo-006-print-stack-trace-replace</artifactId>
+    <artifactId>demo-006-exception-logger-optimize</artifactId>
     <version>1.0.0</version>
 
     <properties>
