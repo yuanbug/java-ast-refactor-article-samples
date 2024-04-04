@@ -1,6 +1,5 @@
 package io.github.yuanbug.ast.article.example.demo003.script;
 
-import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
@@ -15,14 +14,18 @@ import java.util.Objects;
 public class CodeComplexityCalculateVisitor extends GenericVisitorAdapter<Integer, Integer> {
 
     @Override
-    public Integer visit(IfStmt ifStmt, Integer arg) {
-        int currentComplexity = arg + 1;
-        int thenComplexity = Objects.requireNonNullElse(ifStmt.getThenStmt().accept(this, currentComplexity), currentComplexity);
-        int elseComplexity = ifStmt.getElseStmt()
-                // else-if和if平级，不加一
-                .map(elseStmt -> elseStmt.accept(this, elseStmt instanceof IfStmt ? arg : arg + 1))
-                .orElse(currentComplexity);
-        return Math.max(thenComplexity, elseComplexity);
+    public Integer visit(ForStmt forStmt, Integer arg) {
+        return Objects.requireNonNullElse(forStmt.getBody().accept(this, arg + 1), arg + 1);
+    }
+
+    @Override
+    public Integer visit(WhileStmt whileStmt, Integer arg) {
+        return Objects.requireNonNullElse(whileStmt.getBody().accept(this, arg + 1), arg + 1);
+    }
+
+    @Override
+    public Integer visit(DoStmt doStmt, Integer arg) {
+        return Objects.requireNonNullElse(doStmt.getBody().accept(this, arg + 1), arg + 1);
     }
 
     @Override
@@ -36,8 +39,14 @@ public class CodeComplexityCalculateVisitor extends GenericVisitorAdapter<Intege
     }
 
     @Override
-    public Integer visit(ForStmt forStmt, Integer arg) {
-        return Objects.requireNonNullElse(forStmt.getBody().accept(this, arg + 1), arg + 1);
+    public Integer visit(IfStmt ifStmt, Integer arg) {
+        int currentComplexity = arg + 1;
+        int thenComplexity = Objects.requireNonNullElse(ifStmt.getThenStmt().accept(this, currentComplexity), currentComplexity);
+        int elseComplexity = ifStmt.getElseStmt()
+                // else-if和if平级，不加一
+                .map(elseStmt -> elseStmt.accept(this, elseStmt instanceof IfStmt ? arg : arg + 1))
+                .orElse(currentComplexity);
+        return Math.max(thenComplexity, elseComplexity);
     }
 
     @Override
@@ -48,16 +57,6 @@ public class CodeComplexityCalculateVisitor extends GenericVisitorAdapter<Intege
                 .filter(Objects::nonNull)
                 .max(Comparator.naturalOrder())
                 .orElse(currentComplexity);
-    }
-
-    @Override
-    public Integer visit(WhileStmt whileStmt, Integer arg) {
-        return Objects.requireNonNullElse(whileStmt.getBody().accept(this, arg + 1), arg + 1);
-    }
-
-    @Override
-    public Integer visit(DoStmt doStmt, Integer arg) {
-        return Objects.requireNonNullElse(doStmt.getBody().accept(this, arg + 1), arg + 1);
     }
 
     @Override
