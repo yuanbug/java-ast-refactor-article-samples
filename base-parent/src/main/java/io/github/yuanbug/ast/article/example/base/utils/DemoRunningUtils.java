@@ -24,9 +24,13 @@ public final class DemoRunningUtils {
     private static final Pattern MAIN_CLASS_PACKAGE_NAME_PATTERN = Pattern.compile("io\\.github\\.yuanbug\\.ast\\.article\\.example\\.demo(\\d+)");
 
     public static void executeToAllCases(BaseSimpleScript script, boolean writeBack) {
+        executeToAllCases(script, writeBack, !writeBack);
+    }
+
+    public static void executeToAllCases(BaseSimpleScript script, boolean writeBack, boolean printCode) {
         List<File> files = getSimpleUseCaseClassFiles();
         for (File file : files) {
-            script.handleJavaFile(file, writeBack);
+            script.handleJavaFile(file, writeBack, printCode);
         }
     }
 

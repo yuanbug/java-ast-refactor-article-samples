@@ -18,7 +18,7 @@ public abstract class BaseSimpleScript {
     protected static final JavaParser JAVA_PARSER = new JavaParser();
 
     @SneakyThrows
-    public void handleJavaFile(File file, boolean writeBack) {
+    public void handleJavaFile(File file, boolean writeBack, boolean printCode) {
         CompilationUnit ast = parseAst(file);
         if (null == ast) {
             return;
@@ -26,14 +26,15 @@ public abstract class BaseSimpleScript {
         // 尽量避免破坏原始代码格式
         LexicalPreservingPrinter.setup(ast);
         doHandle(ast);
-        if (!writeBack) {
+        if (printCode) {
             System.out.printf("%n------- %s : %n", file.getName());
             System.out.println(ast);
             System.out.printf("%n--------------------------------%n");
-            return;
         }
-        try (PrintWriter printWriter = new PrintWriter(file)) {
-            printWriter.print(ast);
+        if (writeBack) {
+            try (PrintWriter printWriter = new PrintWriter(file)) {
+                printWriter.print(ast);
+            }
         }
     }
 
