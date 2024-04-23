@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.yuanbug.ast.article.example</groupId>
-    <artifactId>demo-004-type-solver</artifactId>
+    <artifactId>demo-004-symbol-solver</artifactId>
     <version>1.0.0</version>
 
     <properties>
