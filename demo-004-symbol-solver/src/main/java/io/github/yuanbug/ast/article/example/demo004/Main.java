@@ -21,7 +21,7 @@ import java.nio.file.Path;
  */
 public class Main {
 
-    private static final Path SRC_PATH = Path.of(System.getProperty("user.dir"), "demo-004-type-solver", "src/main/java");
+    private static final Path SRC_PATH = Path.of(System.getProperty("user.dir"), "demo-004-symbol-solver", "src/main/java");
 
     public static JavaParser buildJavaParser() {
         ParserConfiguration configuration = new ParserConfiguration();
