@@ -1,12 +1,13 @@
 package io.github.yuanbug.ast.article.example.base.utils;
 
-import io.github.yuanbug.ast.article.example.base.script.BaseSimpleScript;
+import io.github.yuanbug.ast.article.example.base.script.AstScript;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,18 +24,26 @@ public final class DemoRunningUtils {
 
     private static final Pattern MAIN_CLASS_PACKAGE_NAME_PATTERN = Pattern.compile("io\\.github\\.yuanbug\\.ast\\.article\\.example\\.demo(\\d+)");
 
-    public static void executeToAllCases(BaseSimpleScript script, boolean writeBack) {
+    public static void executeToAllCases(AstScript script, boolean writeBack) {
         executeToAllCases(script, writeBack, !writeBack);
     }
 
-    public static void executeToAllCases(BaseSimpleScript script, boolean writeBack, boolean printCode) {
-        List<File> files = getSimpleUseCaseClassFiles();
+    public static void executeToAllCases(AstScript script, boolean writeBack, boolean printCode) {
+        List<File> files = getAllFiles(getUseCasesDir());
         for (File file : files) {
             script.handleJavaFile(file, writeBack, printCode);
         }
     }
 
-    public static List<File> getSimpleUseCaseClassFiles() {
+    public static File getUseCasesDir() {
+        return getDir((moduleRoot, packageName) -> moduleRoot.resolve(Path.of("src/main/java", packageName.replace(".", "/"), "cases")));
+    }
+
+    public static File getSrcDir() {
+        return getDir((moduleRoot, packageName) -> moduleRoot.resolve(Path.of("src/main/java")));
+    }
+
+    private static File getDir(BiFunction<Path, String, Path> consumer) {
         String mainClassName = Stream.of(Thread.currentThread().getStackTrace())
                 .map(StackTraceElement::getClassName)
                 .filter(name -> !name.startsWith("java."))
@@ -48,21 +57,18 @@ public final class DemoRunningUtils {
         }
         String moduleNamePrefix = "demo-%s".formatted(matcher.group(1));
         Path workingPath = Path.of(System.getProperty("user.dir"));
-        Path useCasesRelativePath = Path.of("src/main/java", packageName.replace(".", "/"), "cases");
-        File useCasesDir = Optional.ofNullable(workingPath.toFile().listFiles())
+        return Optional.ofNullable(workingPath.toFile().listFiles())
                 .map(Stream::of)
                 .stream()
                 .flatMap(Function.identity())
                 .filter(File::isDirectory)
                 .filter(file -> file.getName().startsWith(moduleNamePrefix))
                 .map(File::toPath)
-                .map(moduleDir -> moduleDir.resolve(useCasesRelativePath))
+                .map(moduleDir -> consumer.apply(moduleDir, packageName))
                 .map(Path::toFile)
                 .filter(File::exists)
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("定位不到Main类所在模块的用例目录 %s".formatted(mainClassName)));
-
-        return getAllFiles(useCasesDir);
     }
 
     private static List<File> getAllFiles(File parent) {
