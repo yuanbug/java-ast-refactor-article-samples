@@ -1,4 +1,4 @@
-package io.github.yuanbug.ast.article.example.demo005.cases.case1;
+package io.github.yuanbug.ast.article.example.demo006.cases.case1;
 
 /**
  * @author yuanbug

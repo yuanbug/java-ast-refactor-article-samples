@@ -9,7 +9,7 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSol
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import io.github.yuanbug.ast.article.example.base.entity.JavaFileAstInfo;
-import io.github.yuanbug.ast.article.example.base.entity.JavaFileIndexContext;
+import io.github.yuanbug.ast.article.example.base.entity.AstScriptIndexContext;
 
 import java.io.File;
 import java.util.Arrays;
@@ -23,8 +23,8 @@ import java.util.Queue;
  */
 public abstract class BaseMultiFileScript implements AstScript {
 
-    private final JavaParser javaParser;
-    private final JavaFileIndexContext indexContext;
+    protected final JavaParser javaParser;
+    protected final AstScriptIndexContext indexContext;
 
     protected BaseMultiFileScript(File... javaFileRoots) {
         if (null == javaFileRoots || javaFileRoots.length == 0) {
@@ -43,6 +43,7 @@ public abstract class BaseMultiFileScript implements AstScript {
             typeSolver.add(new JavaParserTypeSolver(javaFileRoot));
         }
         configuration.setSymbolResolver(new JavaSymbolSolver(typeSolver));
+        configuration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
         return new JavaParser(configuration);
     }
 
@@ -50,8 +51,8 @@ public abstract class BaseMultiFileScript implements AstScript {
      * @param javaFileRoots 各模块的源码根目录
      * @return 索引上下文
      */
-    private static JavaFileIndexContext buildIndexContext(JavaParser javaParser, File... javaFileRoots) {
-        JavaFileIndexContext context = new JavaFileIndexContext(javaParser);
+    private static AstScriptIndexContext buildIndexContext(JavaParser javaParser, File... javaFileRoots) {
+        AstScriptIndexContext context = new AstScriptIndexContext(javaParser);
         Queue<File> queue = new LinkedList<>(Arrays.asList(javaFileRoots));
         while (!queue.isEmpty()) {
             File current = queue.poll();
@@ -76,7 +77,7 @@ public abstract class BaseMultiFileScript implements AstScript {
         }
         CompilationUnit ast = info.getAst();
         LexicalPreservingPrinter.setup(ast);
-        if (!doHandle(ast, indexContext, javaParser)) {
+        if (!doHandle(ast, indexContext)) {
             return;
         }
         info.setAstChanged(true);
@@ -86,6 +87,6 @@ public abstract class BaseMultiFileScript implements AstScript {
     /**
      * @return AST是否发生变更
      */
-    protected abstract boolean doHandle(CompilationUnit ast, JavaFileIndexContext indexContext, JavaParser javaParser);
+    protected abstract boolean doHandle(CompilationUnit ast, AstScriptIndexContext indexContext);
 
 }

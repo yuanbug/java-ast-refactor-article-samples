@@ -1,4 +1,4 @@
-package io.github.yuanbug.ast.article.example.demo005.cases.case2;
+package io.github.yuanbug.ast.article.example.demo006.cases.case2;
 
 import lombok.extern.slf4j.Slf4j;
 

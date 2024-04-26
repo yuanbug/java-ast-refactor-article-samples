@@ -1,13 +1,13 @@
 package io.github.yuanbug.ast.article.example.base.script;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 import io.github.yuanbug.ast.article.example.base.utils.AstUtils;
 import lombok.SneakyThrows;
 
 import java.io.File;
-import java.io.PrintWriter;
 
 /**
  * @author yuanbug
@@ -15,12 +15,18 @@ import java.io.PrintWriter;
  */
 public abstract class BaseSimpleScript implements AstScript {
 
-    protected static final JavaParser JAVA_PARSER = new JavaParser();
+    protected final JavaParser javaParser = buildJavaParser();
+
+    protected JavaParser buildJavaParser() {
+        ParserConfiguration configuration = new ParserConfiguration();
+        configuration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
+        return new JavaParser(configuration);
+    }
 
     @Override
     @SneakyThrows
     public void handleJavaFile(File file, boolean writeBack, boolean printCode) {
-        CompilationUnit ast = AstUtils.parseAst(file, JAVA_PARSER);
+        CompilationUnit ast = AstUtils.parseAst(file, javaParser);
         if (null == ast) {
             return;
         }
