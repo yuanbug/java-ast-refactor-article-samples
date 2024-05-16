@@ -50,6 +50,7 @@ public class BaseControllerImplSearchScript extends BaseMultiFileScript {
         if (extendedTypes.size() != 1) {
             return false;
         }
+        // 对父类进行判断
         return isBaseController(extendedTypes.get(0), indexContext);
     }
 
