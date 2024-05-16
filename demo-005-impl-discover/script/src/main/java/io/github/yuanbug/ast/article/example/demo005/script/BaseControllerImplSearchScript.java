@@ -31,6 +31,7 @@ public class BaseControllerImplSearchScript extends BaseMultiFileScript {
     }
 
     private void printIfImplementsBaseController(ClassOrInterfaceDeclaration declaration, AstScriptIndexContext indexContext) {
+        // 跳过抽象类和接口
         if (declaration.isAbstract() || declaration.isInterface()) {
             return;
         }
@@ -44,6 +45,7 @@ public class BaseControllerImplSearchScript extends BaseMultiFileScript {
         if (declaration.isInterface()) {
             return false;
         }
+        // 检查extends（由于已经排除了接口，至多只可能有一个）
         var extendedTypes = declaration.getExtendedTypes();
         if (extendedTypes.size() != 1) {
             return false;
@@ -52,11 +54,14 @@ public class BaseControllerImplSearchScript extends BaseMultiFileScript {
     }
 
     private boolean isBaseController(ClassOrInterfaceType type, AstScriptIndexContext indexContext) {
+        // 借助符号解析器获取父类的类限定名
         ResolvedReferenceType referenceType = type.resolve().asReferenceType();
         String qualifiedName = referenceType.getQualifiedName();
+        // 如果父类就是BaseController，返回真
         if (BaseController.class.getName().equals(qualifiedName)) {
             return true;
         }
+        // 否则继续检查父类的父类
         return Optional.ofNullable(indexContext.getInfoByClassName(qualifiedName))
                 .map(JavaFileAstInfo::getAst)
                 .flatMap(ast -> ast.findFirst(
