@@ -6,7 +6,6 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import com.github.javaparser.resolution.types.ResolvedType;
 import io.github.yuanbug.ast.article.example.base.entity.AstScriptIndexContext;
 import io.github.yuanbug.ast.article.example.base.script.BaseMultiFileScript;
 
@@ -28,7 +27,7 @@ public class FormComponentImplOptimizeScript extends BaseMultiFileScript {
 
     public static void main(String[] args) {
         FormComponentImplOptimizeScript script = new FormComponentImplOptimizeScript();
-        Path workingPath = SRC_PATH.resolve("io/github/yuanbug/ast/article/example/demo006/cases/using");
+        Path workingPath = SRC_PATH.resolve("io/github/yuanbug/ast/article/example/demo006/cases/set");
         getAllJavaFiles(workingPath.toFile()).forEach(file -> script.handleJavaFile(file, false, true));
     }
 

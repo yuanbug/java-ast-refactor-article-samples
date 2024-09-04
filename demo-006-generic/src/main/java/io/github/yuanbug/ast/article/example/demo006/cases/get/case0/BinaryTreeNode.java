@@ -1,4 +1,4 @@
-package io.github.yuanbug.ast.article.example.demo006.cases.introduce.case0;
+package io.github.yuanbug.ast.article.example.demo006.cases.get.case0;
 
 import lombok.Data;
 

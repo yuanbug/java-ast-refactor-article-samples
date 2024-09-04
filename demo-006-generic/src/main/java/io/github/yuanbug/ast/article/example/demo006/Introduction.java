@@ -12,8 +12,6 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
-import com.github.javaparser.ast.type.TypeParameter;
-import com.github.javaparser.ast.type.WildcardType;
 import com.github.javaparser.resolution.declarations.ResolvedFieldDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedTypeDeclaration;
@@ -23,10 +21,10 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSol
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import io.github.yuanbug.ast.article.example.base.utils.AstUtils;
-import io.github.yuanbug.ast.article.example.demo006.cases.introduce.case0.BinaryTreeNode;
-import io.github.yuanbug.ast.article.example.demo006.cases.introduce.case1.MyServiceImpl;
-import io.github.yuanbug.ast.article.example.demo006.cases.introduce.case2.GenericMethodCase;
-import io.github.yuanbug.ast.article.example.demo006.cases.introduce.case3.GenericFieldImpl;
+import io.github.yuanbug.ast.article.example.demo006.cases.get.case0.BinaryTreeNode;
+import io.github.yuanbug.ast.article.example.demo006.cases.get.case1.MyServiceImpl;
+import io.github.yuanbug.ast.article.example.demo006.cases.get.case2.GenericMethodCase;
+import io.github.yuanbug.ast.article.example.demo006.cases.get.case3.GenericFieldImpl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
