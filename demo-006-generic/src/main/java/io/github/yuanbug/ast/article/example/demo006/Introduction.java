@@ -3,27 +3,30 @@ package io.github.yuanbug.ast.article.example.demo006;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.FieldAccessExpr;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.Type;
+import com.github.javaparser.ast.type.TypeParameter;
+import com.github.javaparser.ast.type.WildcardType;
 import com.github.javaparser.resolution.declarations.ResolvedFieldDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedTypeDeclaration;
-import com.github.javaparser.resolution.declarations.ResolvedValueDeclaration;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import io.github.yuanbug.ast.article.example.base.utils.AstUtils;
-import io.github.yuanbug.ast.article.example.demo006.cases.case1.MyServiceImpl;
-import io.github.yuanbug.ast.article.example.demo006.cases.case2.GenericMethodCase;
-import io.github.yuanbug.ast.article.example.demo006.cases.case3.GenericFieldImpl;
+import io.github.yuanbug.ast.article.example.demo006.cases.introduce.case0.BinaryTreeNode;
+import io.github.yuanbug.ast.article.example.demo006.cases.introduce.case1.MyServiceImpl;
+import io.github.yuanbug.ast.article.example.demo006.cases.introduce.case2.GenericMethodCase;
+import io.github.yuanbug.ast.article.example.demo006.cases.introduce.case3.GenericFieldImpl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -39,7 +42,7 @@ import java.util.Optional;
  * @since 2024-05-18
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Main {
+public final class Introduction {
 
     private static final Path SRC_PATH = Path.of(System.getProperty("user.dir"), "demo-006-generic", "src/main/java");
 
@@ -51,6 +54,7 @@ public final class Main {
                 new ReflectionTypeSolver(),
                 new JavaParserTypeSolver(SRC_PATH)
         )));
+        configuration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
         return new JavaParser(configuration);
     }
 
@@ -61,9 +65,32 @@ public final class Main {
     public static void main(String[] args) {
         JavaParser javaParser = buildJavaParser();
 
+        parseSimpleGenericVar(javaParser);
         parseTypeGenericParam(javaParser);
         parseMethodGenericParam(javaParser);
         parseGenericField(javaParser);
+    }
+
+    private static void parseSimpleGenericVar(JavaParser javaParser) {
+        CompilationUnit ast = Objects.requireNonNull(AstUtils.parseAst(getFile(BinaryTreeNode.class), javaParser));
+
+        MethodDeclaration toJsonString = ast.findFirst(MethodDeclaration.class, method -> "toJsonString".equals(method.getNameAsString())).orElseThrow();
+        NameExpr expr = toJsonString.findFirst(NameExpr.class, nameExpr -> "data".equals(nameExpr.getNameAsString())).orElseThrow();
+        ResolvedType dataType = expr.resolve().getType();
+        System.out.println("data变量：");
+        System.out.println(dataType.getClass());
+        System.out.println(dataType);
+        System.out.println(dataType.asTypeParameter());
+
+        System.out.println("leftChild字段：");
+        VariableDeclarator leftChild = ast.findFirst(VariableDeclarator.class, variableDeclarator -> "leftChild".equals(variableDeclarator.getNameAsString())).orElseThrow();
+        ClassOrInterfaceType leftChildType = (ClassOrInterfaceType) leftChild.getType();
+        System.out.println(leftChildType);
+        Type leftChildGenicType = leftChildType.getTypeArguments().flatMap(NodeList::getFirst).orElseThrow();
+        // 能获取的信息没有resolve().getType()那么丰富
+        System.out.println(leftChildGenicType);
+
+        System.out.println(CASE_GAP_LINE);
     }
 
     private static void parseTypeGenericParam(JavaParser javaParser) {
